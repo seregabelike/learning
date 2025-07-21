@@ -1,0 +1,26 @@
+import math
+def calculate_factorial(n):
+    return math.factorial(n)
+def get_positive_integer():
+    while True:
+        try:
+            user_input = input("Введите положительное целое число: ")
+            number = int(user_input)
+            if number < 0:
+                print("Ошибка: Введено отрицательное число. Пожалуйста, введите положительное число.")
+                continue
+            return number
+        except ValueError:
+            print("Ошибка: Введено не число. Пожалуйста, введите целое число.")
+def main():
+    print("Программа для вычисления факториала числа")
+    number = get_positive_integer()
+    try:
+        result = calculate_factorial(number)
+        print(f"Факториал числа {number} равен: {result}")
+    except OverflowError:
+        print("Ошибка: Результат слишком велик для отображения.")
+    except Exception as e:
+        print(f"Произошла непредвиденная ошибка: {e}")
+if __name__ == "__main__":
+    main()
