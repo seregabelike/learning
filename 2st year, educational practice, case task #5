@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Университет Синергия</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&family=Press+Start+2P&family=Lobster&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        
+        .container {
+            background-color: white;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 30px;
+            color: #1a1a2e;
+            border-bottom: 3px solid #e94560;
+            padding-bottom: 15px;
+        }
+        
+        .org-card {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            border-left: 5px solid #e94560;
+        }
+        
+        .org-card h2 {
+            color: #1a1a2e;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        
+        .org-card .subtitle {
+            color: #e94560;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .org-card p {
+            color: #333;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+        
+        .org-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .org-card ul li {
+            padding: 5px 0;
+            color: #333;
+        }
+        
+        .org-card ul li strong {
+            color: #1a1a2e;
+        }
+        
+        .description {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+            color: #444;
+        }
+        
+        .fonts-block {
+            margin-top: 40px;
+        }
+        
+        .fonts-block h3 {
+            text-align: center;
+            font-size: 22px;
+            color: #1a1a2e;
+        }
+        
+        .font-sample {
+            background-color: #fafafa;
+            padding: 15px 20px;
+            margin: 12px 0;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .font-sample .label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #e94560;
+            margin-bottom: 5px;
+        }
+        
+        .font-sample .text {
+            font-size: 20px;
+            color: #1a1a2e;
+        }
+        
+        .font-sample .text small {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .font-official .text {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-roboto .text {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .font-playfair .text {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .font-pixel .text {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 16px;
+        }
+        .font-pixel .text small {
+            font-size: 11px;
+        }
+        
+        .font-lobster .text {
+            font-family: 'Lobster', cursive;
+        }
+        
+        .font-courier .text {
+            font-family: 'Courier Prime', monospace;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <h1>Университет «Синергия»</h1>
+    
+    <div>
+        <h2>Автономная некоммерческая организация высшего образования</h2>
+        <div class="subtitle">Московский университет «Синергия»</div>
+        
+        <ul>
+            <li><strong>Основан:</strong> 1995 год</li>
+            <li><strong>Организационно-правовая форма:</strong> АНО</li>
+            <li><strong>Головной офис:</strong> г. Москва, ул. Мещанская, д. 9/14, стр. 1</li>
+            <li><strong>Направления:</strong> экономика, IT, юриспруденция, менеджмент, дизайн, медицина</li>
+            <li><strong>Филиалы:</strong> более 150 по России и за рубежом</li>
+        </ul>
+        
+        <div class="description">
+            <strong>Университет «Синергия»</strong> — один из крупнейших частных вузов России. 
+            Внедряет цифровые технологии, развивает онлайн-обучение и международную сеть кампусов.
+        </div>
+    </div>
+    
+    <div class="fonts-block">
+        <h3>6 вариантов шрифтов</h3>
+        
+        <div class="font-sample font-official">
+            <div class="label">Шрифт компании</div>
+            <div class="text">
+                Университет «Синергия»<br>
+            </div>
+        </div>
+        
+        <div class="font-sample font-roboto">
+            <div class="label">Вариант 1</div>
+            <div class="text">
+                Университет «Синергия»<br>
+            </div>
+        </div>
+        
+        <div class="font-sample font-playfair">
+            <div class="label">Вариант 2</div>
+            <div class="text">
+                Университет «Синергия»<br>
+            </div>
+        </div>
+        
+        <div class="font-sample font-pixel">
+            <div class="label">Вариант 3</div>
+            <div class="text">
+                Университет «Синергия»<br>
+            </div>
+        </div>
+        
+        <div class="font-sample font-lobster">
+            <div class="label">Вариант 4</div>
+            <div class="text">
+                Университет «Синергия»<br>
+            </div>
+        </div>
+        
+        <div class="font-sample font-courier">
+            <div class="label">Вариант 5</div>
+            <div class="text">
+                Университет «Синергия»<br>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px; color: #aaa; font-size: 13px;">
+    </div>
+    
+</div>
+
+</body>
+</html>
