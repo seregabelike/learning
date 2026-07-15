@@ -1,0 +1,526 @@
+#include <gtest/gtest.h>
+#include <vector>
+#include <memory>
+#include <stdexcept>
+#include <algorithm>
+#include <string>
+
+
+// 1. Queue class
+
+template<typename T>
+class Queue {
+private:
+    std::vector<T> data;
+    
+public:
+    void push(const T& value) {
+        data.push_back(value);
+    }
+    
+    T pop() {
+        if (empty()) {
+            throw std::out_of_range("Queue is empty");
+        }
+        T front_value = data.front();
+        data.erase(data.begin());
+        return front_value;
+    }
+    
+    bool empty() const {
+        return data.empty();
+    }
+    
+    size_t size() const {
+        return data.size();
+    }
+    
+    T front() const {
+        if (empty()) {
+            throw std::out_of_range("Queue is empty");
+        }
+        return data.front();
+    }
+};
+
+
+// 2. Heap class
+
+
+template<typename T>
+class Heap {
+private:
+    std::vector<T> data;
+    
+    void heapify_up(size_t index) {
+        while (index > 0) {
+            size_t parent = (index - 1) / 2;
+            if (data[parent] >= data[index]) {
+                break;
+            }
+            std::swap(data[parent], data[index]);
+            index = parent;
+        }
+    }
+    
+    void heapify_down(size_t index) {
+        size_t size = data.size();
+        while (true) {
+            size_t left = 2 * index + 1;
+            size_t right = 2 * index + 2;
+            size_t largest = index;
+            
+            if (left < size && data[left] > data[largest]) {
+                largest = left;
+            }
+            if (right < size && data[right] > data[largest]) {
+                largest = right;
+            }
+            if (largest == index) {
+                break;
+            }
+            std::swap(data[index], data[largest]);
+            index = largest;
+        }
+    }
+    
+public:
+    void push(const T& value) {
+        data.push_back(value);
+        heapify_up(data.size() - 1);
+    }
+    
+    T pop() {
+        if (empty()) {
+            throw std::out_of_range("Heap is empty");
+        }
+        T top_value = data[0];
+        data[0] = data.back();
+        data.pop_back();
+        if (!empty()) {
+            heapify_down(0);
+        }
+        return top_value;
+    }
+    
+    T top() const {
+        if (empty()) {
+            throw std::out_of_range("Heap is empty");
+        }
+        return data[0];
+    }
+    
+    bool empty() const {
+        return data.empty();
+    }
+    
+    size_t size() const {
+        return data.size();
+    }
+};
+
+// 3. Binary tree class
+
+template<typename T>
+class BinaryTree {
+private:
+    struct Node {
+        T value;
+        std::unique_ptr<Node> left;
+        std::unique_ptr<Node> right;
+        
+        Node(const T& val) : value(val) {}
+    };
+    
+    std::unique_ptr<Node> root;
+    size_t count = 0;
+    
+    bool search_recursive(Node* node, const T& value) const {
+        if (!node) {
+            return false;
+        }
+        if (value == node->value) {
+            return true;
+        }
+        if (value < node->value) {
+            return search_recursive(node->left.get(), value);
+        }
+        return search_recursive(node->right.get(), value);
+    }
+    
+    bool insert_recursive(std::unique_ptr<Node>& node, const T& value) {
+        if (!node) {
+            node = std::make_unique<Node>(value);
+            return true;
+        }
+        if (value == node->value) {
+            return false;  // Дубликат не добавляем
+        }
+        if (value < node->value) {
+            return insert_recursive(node->left, value);
+        }
+        return insert_recursive(node->right, value);
+    }
+    
+    Node* find_min(Node* node) const {
+        while (node && node->left) {
+            node = node->left.get();
+        }
+        return node;
+    }
+    
+    bool remove_recursive(std::unique_ptr<Node>& node, const T& value) {
+        if (!node) {
+            return false;
+        }
+        
+        if (value < node->value) {
+            return remove_recursive(node->left, value);
+        }
+        if (value > node->value) {
+            return remove_recursive(node->right, value);
+        }
+        
+        // Нашли узел для удаления
+        if (!node->left) {
+            node = std::move(node->right);
+        } else if (!node->right) {
+            node = std::move(node->left);
+        } else {
+            // Узел с двумя потомками
+            Node* min_right = find_min(node->right.get());
+            node->value = min_right->value;
+            remove_recursive(node->right, min_right->value);
+        }
+        return true;
+    }
+    
+public:
+    void push(const T& value) {
+        if (insert_recursive(root, value)) {
+            count++;
+        }
+    }
+    
+    bool pop(const T& value) {
+        if (remove_recursive(root, value)) {
+            count--;
+            return true;
+        }
+        return false;
+    }
+    
+    bool search(const T& value) const {
+        return search_recursive(root.get(), value);
+    }
+    
+    bool empty() const {
+        return root == nullptr;
+    }
+    
+    size_t size() const {
+        return count;
+    }
+};
+
+// 4. Tests for Queue 
+
+TEST(QueueTest, PushIntoEmptyQueue) {
+    Queue<int> q;
+    q.push(10);
+    EXPECT_FALSE(q.empty());
+    EXPECT_EQ(q.size(), 1);
+}
+
+TEST(QueueTest, PopFromNonEmptyQueueFIFO) {
+    Queue<int> q;
+    q.push(1);
+    q.push(2);
+    q.push(3);
+    
+    EXPECT_EQ(q.pop(), 1);
+    EXPECT_EQ(q.pop(), 2);
+    EXPECT_EQ(q.pop(), 3);
+    EXPECT_TRUE(q.empty());
+}
+
+TEST(QueueTest, PopFromEmptyQueueThrows) {
+    Queue<int> q;
+    EXPECT_THROW(q.pop(), std::out_of_range);
+}
+
+TEST(QueueTest, PushAfterPop) {
+    Queue<int> q;
+    q.push(5);
+    q.push(10);
+    q.pop();
+    q.push(15);
+    
+    EXPECT_EQ(q.pop(), 10);
+    EXPECT_EQ(q.pop(), 15);
+    EXPECT_TRUE(q.empty());
+}
+
+TEST(QueueTest, SizeAfterOperations) {
+    Queue<int> q;
+    EXPECT_EQ(q.size(), 0);
+    q.push(100);
+    q.push(200);
+    EXPECT_EQ(q.size(), 2);
+    q.pop();
+    EXPECT_EQ(q.size(), 1);
+}
+
+TEST(QueueTest, FrontReturnsFirstElement) {
+    Queue<int> q;
+    q.push(10);
+    q.push(20);
+    EXPECT_EQ(q.front(), 10);
+    q.pop();
+    EXPECT_EQ(q.front(), 20);
+}
+
+TEST(QueueTest, FrontOnEmptyThrows) {
+    Queue<int> q;
+    EXPECT_THROW(q.front(), std::out_of_range);
+}
+
+// 5. Heap test
+
+TEST(HeapTest, PushIntoEmptyHeap) {
+    Heap<int> h;
+    h.push(42);
+    EXPECT_FALSE(h.empty());
+    EXPECT_EQ(h.size(), 1);
+    EXPECT_EQ(h.top(), 42);
+}
+
+TEST(HeapTest, PopReturnsMaxElement) {
+    Heap<int> h;
+    h.push(10);
+    h.push(30);
+    h.push(20);
+    h.push(5);
+    h.push(25);
+    
+    EXPECT_EQ(h.pop(), 30);
+    EXPECT_EQ(h.pop(), 25);
+    EXPECT_EQ(h.pop(), 20);
+    EXPECT_EQ(h.pop(), 10);
+    EXPECT_EQ(h.pop(), 5);
+    EXPECT_TRUE(h.empty());
+}
+
+TEST(HeapTest, PopFromEmptyHeapThrows) {
+    Heap<int> h;
+    EXPECT_THROW(h.pop(), std::out_of_range);
+}
+
+TEST(HeapTest, PushAfterPopMaintainsHeapProperty) {
+    Heap<int> h;
+    h.push(50);
+    h.push(40);
+    h.push(70);
+    h.pop();
+    h.push(60);
+    
+    EXPECT_EQ(h.pop(), 60);
+    EXPECT_EQ(h.pop(), 50);
+    EXPECT_EQ(h.pop(), 40);
+}
+
+TEST(HeapTest, HeapSize) {
+    Heap<int> h;
+    EXPECT_EQ(h.size(), 0);
+    h.push(1);
+    h.push(2);
+    EXPECT_EQ(h.size(), 2);
+    h.pop();
+    EXPECT_EQ(h.size(), 1);
+}
+
+TEST(HeapTest, TopDoesNotRemoveElement) {
+    Heap<int> h;
+    h.push(100);
+    h.push(200);
+    EXPECT_EQ(h.top(), 200);
+    EXPECT_EQ(h.size(), 2);
+}
+
+TEST(HeapTest, TopOnEmptyThrows) {
+    Heap<int> h;
+    EXPECT_THROW(h.top(), std::out_of_range);
+}
+
+TEST(HeapTest, HandlesDuplicates) {
+    Heap<int> h;
+    h.push(5);
+    h.push(5);
+    h.push(3);
+    h.push(7);
+    
+    EXPECT_EQ(h.pop(), 7);
+    EXPECT_EQ(h.pop(), 5);
+    EXPECT_EQ(h.pop(), 5);
+    EXPECT_EQ(h.pop(), 3);
+}
+
+// 6. Test for binary tree
+
+TEST(BinaryTreeTest, PushIntoEmptyTree) {
+    BinaryTree<int> tree;
+    tree.push(10);
+    EXPECT_FALSE(tree.empty());
+    EXPECT_EQ(tree.size(), 1);
+    EXPECT_TRUE(tree.search(10));
+}
+
+TEST(BinaryTreeTest, SearchExistingElement) {
+    BinaryTree<int> tree;
+    tree.push(50);
+    tree.push(30);
+    tree.push(70);
+    tree.push(20);
+    tree.push(40);
+    
+    EXPECT_TRUE(tree.search(30));
+    EXPECT_TRUE(tree.search(70));
+    EXPECT_TRUE(tree.search(20));
+    EXPECT_TRUE(tree.search(40));
+    EXPECT_TRUE(tree.search(50));
+}
+
+TEST(BinaryTreeTest, SearchNonExistingElement) {
+    BinaryTree<int> tree;
+    tree.push(10);
+    tree.push(5);
+    tree.push(15);
+    
+    EXPECT_FALSE(tree.search(7));
+    EXPECT_FALSE(tree.search(100));
+    EXPECT_FALSE(tree.search(0));
+}
+
+TEST(BinaryTreeTest, RemoveLeafNode) {
+    BinaryTree<int> tree;
+    tree.push(10);
+    tree.push(5);
+    tree.push(15);
+    tree.push(3);
+    
+    bool removed = tree.pop(3);
+    EXPECT_TRUE(removed);
+    EXPECT_EQ(tree.size(), 3);
+    EXPECT_FALSE(tree.search(3));
+    EXPECT_TRUE(tree.search(5));
+    EXPECT_TRUE(tree.search(10));
+    EXPECT_TRUE(tree.search(15));
+}
+
+TEST(BinaryTreeTest, RemoveNodeWithOneChild) {
+    BinaryTree<int> tree;
+    tree.push(20);
+    tree.push(10);
+    tree.push(5);
+    tree.push(30);
+    
+    bool removed = tree.pop(10);
+    EXPECT_TRUE(removed);
+    EXPECT_EQ(tree.size(), 3);
+    EXPECT_FALSE(tree.search(10));
+    EXPECT_TRUE(tree.search(5));
+    EXPECT_TRUE(tree.search(20));
+    EXPECT_TRUE(tree.search(30));
+}
+
+TEST(BinaryTreeTest, RemoveNodeWithTwoChildren) {
+    BinaryTree<int> tree;
+    tree.push(50);
+    tree.push(30);
+    tree.push(70);
+    tree.push(20);
+    tree.push(40);
+    tree.push(60);
+    tree.push(80);
+    
+    bool removed = tree.pop(50);
+    EXPECT_TRUE(removed);
+    EXPECT_EQ(tree.size(), 6);
+    EXPECT_FALSE(tree.search(50));
+    EXPECT_TRUE(tree.search(30));
+    EXPECT_TRUE(tree.search(70));
+    EXPECT_TRUE(tree.search(20));
+    EXPECT_TRUE(tree.search(40));
+    EXPECT_TRUE(tree.search(60));
+    EXPECT_TRUE(tree.search(80));
+}
+
+TEST(BinaryTreeTest, RemoveNonExistingElement) {
+    BinaryTree<int> tree;
+    tree.push(10);
+    tree.push(5);
+    
+    bool removed = tree.pop(99);
+    EXPECT_FALSE(removed);
+    EXPECT_EQ(tree.size(), 2);
+    EXPECT_TRUE(tree.search(10));
+    EXPECT_TRUE(tree.search(5));
+}
+
+TEST(BinaryTreeTest, RemoveFromEmptyTree) {
+    BinaryTree<int> tree;
+    bool removed = tree.pop(10);
+    EXPECT_FALSE(removed);
+    EXPECT_TRUE(tree.empty());
+}
+
+TEST(BinaryTreeTest, PushDuplicateValue) {
+    BinaryTree<int> tree;
+    tree.push(10);
+    tree.push(10);
+    
+    EXPECT_EQ(tree.size(), 1);
+    EXPECT_TRUE(tree.search(10));
+}
+
+TEST(BinaryTreeTest, ComplexTreeOperations) {
+    BinaryTree<int> tree;
+    
+    // Вставка
+    tree.push(8);
+    tree.push(3);
+    tree.push(10);
+    tree.push(1);
+    tree.push(6);
+    tree.push(14);
+    tree.push(4);
+    tree.push(7);
+    tree.push(13);
+    
+    EXPECT_EQ(tree.size(), 9);
+    
+    // Поиск
+    EXPECT_TRUE(tree.search(6));
+    EXPECT_TRUE(tree.search(14));
+    EXPECT_FALSE(tree.search(5));
+    
+    // Удаление узла с двумя потомками (3)
+    tree.pop(3);
+    EXPECT_EQ(tree.size(), 8);
+    EXPECT_FALSE(tree.search(3));
+    EXPECT_TRUE(tree.search(4));
+    EXPECT_TRUE(tree.search(6));
+    
+    // Удаление корня (8)
+    tree.pop(8);
+    EXPECT_EQ(tree.size(), 7);
+    EXPECT_FALSE(tree.search(8));
+    EXPECT_TRUE(tree.search(10));
+}
+
+// Main func
+
+int main(int argc, char** argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
